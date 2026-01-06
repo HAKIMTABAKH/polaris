@@ -22,7 +22,7 @@ const Page = () => {
             </Button>
             {projects?.map((project) => (
                 <div key={project._id} className="mb-4 p-4 border rounded shadow">
-                    <p>Project Name: {project.name}</p>
+                    <p>Projects list: {project.name}</p>
                     <p>Owner ID: {project.ownerId}</p>
                     </div>
             ))}
