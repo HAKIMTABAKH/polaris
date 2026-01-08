@@ -2,9 +2,16 @@
 
 import { Id } from "@/../convex/_generated/dataModel";
 import { cn } from "@/lib/utils";
-import { act, useState } from "react";
+import {  useState } from "react";
 import { FaGithub } from "react-icons/fa";
+import {Allotment} from "allotment";
+import "allotment/dist/style.css";
+import { FileExplorer } from "./file-explorer";
 
+const MIN_SIDEBAR_WIDTH = 200;
+const MAX_SIDEBAR_WIDTH = 800;
+const DEFAULT_SIDEBAR_WIDTH = 350;
+const DEFAULT_MAIN_SIZE = 1000;
 
 const Tab = ({
     label ,
@@ -12,7 +19,7 @@ const Tab = ({
     onClick
 } : {
     label: string ; 
-    isActive: string;
+    isActive: boolean;
     onClick: () => void;
 }) => {
     return (
@@ -49,8 +56,8 @@ export const ProjectIdView = ({
           onClick={() => setActiveView("preview")}
         />
         <div className="ml-auto flex items-center gap-1.5 h-full px-3 cursor-pointer text-muted-foreground border-l hover:bg-accent hover:text-accent-foreground transition-colors p-1">
-            <FaGithub className="size-3.5"/>
-            <span className="text-sm">Export</span>
+          <FaGithub className="size-3.5" />
+          <span className="text-sm">Export</span>
         </div>
       </nav>
       <div className="flex-1 relative">
@@ -60,7 +67,22 @@ export const ProjectIdView = ({
             activeView === "editor" ? "visible" : "invisible"
           )}
         >
-          <div>editor</div>
+          <Allotment
+            defaultSizes={[DEFAULT_SIDEBAR_WIDTH, DEFAULT_MAIN_SIZE]}>
+
+                <Allotment.Pane
+                snap
+                minSize={MIN_SIDEBAR_WIDTH}
+                maxSize={MAX_SIDEBAR_WIDTH}
+                preferredSize={DEFAULT_SIDEBAR_WIDTH}
+                >
+               <FileExplorer projectId={projectId}/>
+                </Allotment.Pane>
+
+                <Allotment.Pane>
+                    <div>Editor view</div>
+                </Allotment.Pane>
+            </Allotment>
         </div>
         <div
           className={cn(
