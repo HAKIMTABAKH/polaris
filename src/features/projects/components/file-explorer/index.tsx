@@ -16,7 +16,7 @@ export const FileExplorer = ({
     projectId: Id<"projects">
 }) => {
     const project = useProject(projectId);
-    const [isOpen, setIsOpen] = useState(false);
+    const [isOpen, setIsOpen] = useState(true);
     const [isHovered, setIsHovered] = useState(false);
     const [collapseKey, setCollapseKey] = useState(0);
         const [creating, setCreating] = useState<"file" | "folder" | null>(null);
