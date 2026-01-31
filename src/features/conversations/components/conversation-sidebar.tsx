@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { Id } from "../../../../convex/_generated/dataModel";
-import { DEFAULT_CONVERSATION_TITLE } from "../../../../convex/constants";
 import { CopyIcon, HistoryIcon, LoaderIcon, Plus, X } from "lucide-react";
 import { Conversation, ConversationContent, ConversationScrollButton } from "@/components/ai-elements/conversation";
 import { PromptInput, PromptInputBody, PromptInputFooter, PromptInputMessage, PromptInputSubmit, PromptInputTextarea, PromptInputTools } from "@/components/ai-elements/prompt-input";
@@ -9,6 +8,8 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Message, MessageAction, MessageActions, MessageContent, MessageResponse } from "@/components/ai-elements/message";
 import ky from "ky";
+import { PastConversationsDialog } from "./past-conversations-dialog";
+import { DEFAULT_CONVERSATION_TITLE } from "../constants";
 
 interface ConversationSidebarProps{
     projectId : Id<"projects">;
@@ -25,6 +26,8 @@ export const  ConversationSidebar = (
     const conversations = useConversations(projectId);
     const activeConversationId = selectedConversationId ?? conversations?.[0]?._id ?? null;
 
+    const [pastConversationsOpen, setPastConversationsOpen] = useState(false)
+
     const activeConversation = useConversation(activeConversationId);
 
     const conversationMessages = useMessages(activeConversationId);
@@ -34,6 +37,16 @@ export const  ConversationSidebar = (
         (message) => message.status === "processing"
     );
 
+      const handleCancel = async () =>{
+        try {
+            await ky.post("/api/messages/cancel",{
+                json: {projectId}
+            });
+            
+        } catch  {
+            toast.error("unable to cancel request")      
+        }
+    }
 
     const handleCreateConversation = async () => {
         try {
@@ -50,11 +63,13 @@ export const  ConversationSidebar = (
         }
     };
 
+  
+
     const handleSubmit = async (message : PromptInputMessage) => {
       //if processing and no new messages this is just a stop function
 
       if(isProcessing && !message.text){
-        //TODO :handleCancel()
+        await handleCancel()
         setInput("");
         return;
       }
@@ -81,6 +96,13 @@ export const  ConversationSidebar = (
 
 
     return (
+        <>
+        <PastConversationsDialog
+            projectId={projectId}
+            open={pastConversationsOpen}
+            onOpenChange={setPastConversationsOpen}
+            onSelect={setSelectedConversationId}
+        />
         <div className="flex flex-col h-full bg-sidebar">
             <div className="h-8.75 flex items-center justify-between border-b ">
                     <div className="text-sm truncate pl-3">
@@ -89,7 +111,9 @@ export const  ConversationSidebar = (
                     <div className="flex items-center px-1 gap-1">
                         <Button
                             variant="highlight"
-                            size="icon-xs">
+                            size="icon-xs"
+                            onClick={() => setPastConversationsOpen(true)}
+                            >
                             <HistoryIcon className="size-3.5 text-white"/>
                         </Button>
                          <Button
@@ -114,7 +138,12 @@ export const  ConversationSidebar = (
                                             <span>Thinking...</span>
                                         </div>
 
-                                    ):(
+                                    ): message.status === "cancelled" ? (
+                                       <span className="text-muted-foreground italic">Request Cancelled </span>
+                                        
+                                    )
+                                    
+                                    :(
                                         <MessageResponse>{message.content}</MessageResponse>
                                     ) }
                                 </MessageContent>
@@ -170,5 +199,6 @@ export const  ConversationSidebar = (
                 </div>
 
         </div>
+        </>
     );
 }
