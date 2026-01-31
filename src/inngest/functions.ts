@@ -1,6 +1,6 @@
 import { generateText } from "ai";
 import { inngest } from "./client";
-import { google } from "@ai-sdk/google";
+import { anthropic } from "@ai-sdk/anthropic";
 import { ur } from "zod/v4/locales";
 import { firecrawl } from "@/lib/firecrawl";
 
@@ -34,10 +34,10 @@ export const demoGenerate = inngest.createFunction(
      ?`Context: ${scrapedContent}\n\nQuestion: ${prompt}`
      :prompt;
 
-     // Generate a response using Google Gemini
+     // Generate a response using Claude
    await step.run("generate-text", async () => {
         return await generateText({
-            model: google('gemini-2.5-flash'),
+            model: anthropic('claude-3-5-sonnet-20241022'),
              prompt: finalPrompt,
              experimental_telemetry: { 
                 isEnabled: true,

@@ -3,7 +3,7 @@ import { json } from '@codemirror/lang-json';
 import {generateText, Output} from "ai";
 import { NextResponse } from "next/server";
 import {   z } from "zod";
-import { google } from "@ai-sdk/google";
+import { anthropic } from "@ai-sdk/anthropic";
 
 import { firecrawl } from '@/lib/firecrawl';
 
@@ -91,7 +91,7 @@ export async function POST(request: Request) {
         .replace("{documentation}", documentationContext);
 
     const {output} = await generateText({
-            model: google("gemini-2.0-flash"),
+            model: anthropic("claude-3-5-sonnet-20241022"),
             output: Output.object({schema: quickEditSchema}),
             prompt,
           });

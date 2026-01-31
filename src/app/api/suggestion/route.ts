@@ -1,8 +1,7 @@
-import { json } from '@codemirror/lang-json';
 import {generateText, Output} from "ai";
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { google } from "@ai-sdk/google";
+import { anthropic } from "@ai-sdk/anthropic";
 
 import { auth } from '@clerk/nextjs/server';
 
@@ -79,7 +78,7 @@ export async function POST(request: Request) {
         .replace("{lineNumber}", lineNumber.toString());
 
         const {output} = await generateText({
-       model: google("gemini-flash-latest"),
+       model: anthropic("claude-3-5-haiku-20241022"),
 
             output:Output.object({schema: suggestionSchema}),
             prompt,

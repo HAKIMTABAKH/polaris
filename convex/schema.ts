@@ -64,7 +64,7 @@ export default defineSchema({
             v.union(
                 v.literal("processing"),
                 v.literal("completed"),
-                v.literal("canceled"),
+                v.literal("cancelled"),
             )),  
     })
     .index("by_conversation", ["conversationId"])
